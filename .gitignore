@@ -1,0 +1,35 @@
+# Las fotos y los vídeos de casa no se publican en este repositorio.
+# Ante la duda, se queda fuera: algo ignorado se puede publicar después;
+# algo publicado no se puede despublicar (queda en el historial).
+
+# Fotos y vídeos originales: solo se publica su README.
+entrada/*
+!entrada/README.md
+
+# Lo que generan los scripts a partir de esas fotos (también muestra la casa).
+salida/*
+!salida/README.md
+
+# Por si una imagen o un vídeo acaba fuera de esas carpetas.
+*.jpg
+*.jpeg
+*.heic
+*.png
+*.dng
+*.tif
+*.tiff
+*.mp4
+*.mov
+*.mkv
+*.webm
+
+# Sistema y editores
+.DS_Store
+*.swp
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
