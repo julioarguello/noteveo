@@ -1,0 +1,2 @@
+[extend]
+path = "scripts/gitleaks-base.toml"

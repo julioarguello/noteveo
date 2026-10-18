@@ -1,0 +1,250 @@
+# gitleaks-base.toml — the family's two credential rules, and the shapes that are legitimate
+# in every repository that carries them.
+#
+# SHARED, AND MAINTAINED CENTRALLY. This file is delivered into `scripts/` alongside
+# `dev-secret-scan.sh`; every repository of this family carries the same two copies. Editing one
+# of them is pointless — the next delivery either overwrites it or reports it as a conflict and
+# stops updating it. Take the change to where they are authored.
+#
+# It is NOT a complete configuration. Each repository keeps its own `.gitleaks.toml`, extends
+# this file, and adds the exemptions its own corpus needs — every one of them with a fixture
+# that proves it covers something:
+#
+#     [extend]
+#     path = "scripts/gitleaks-base.toml"
+#
+# Three measured facts decide that shape (gitleaks 8.30.1, 2026-09-11):
+#
+#   - `extend.path` and `extend.useDefault` cannot both be set: gitleaks exits with
+#     "unable to load config due to extend.path and extend.useDefault being set". So the
+#     default rule set is turned on HERE, and the repository config must not repeat it.
+#   - It still arrives: a planted GitHub PAT is reported as `github-pat` through the two
+#     levels of extension. Rules and global `[[allowlists]]` of this file merge into the
+#     repository's, rather than being replaced by them.
+#   - `path` resolves against the WORKING DIRECTORY, not against the file that declares it.
+#     `dev-secret-scan.sh` therefore runs gitleaks from the repository root, and a missing
+#     base is a fatal gitleaks error rather than a silent scan with fewer rules.
+#
+# WHY TWO RULES, AND NEITHER ALONE (measured on the documentation site, 2026-09-10)
+#
+# The extractor that wrote the March 2026 catalogue had a redaction rule, and it matched none
+# of the 110 clear-text credentials it committed: it lower-cased the key and called `endswith`
+# without stripping separators, so `work_OCADO_API_key` ends in `api_key`, never `apikey`.
+# gitleaks' own `generic-api-key` finds the values whose KEY says nothing — the `*_gravitee_key`
+# family, a 40-character key parked under `…_quota_user` — and misses ten occurrences whose
+# shape falls under its entropy bar. The key-name rule finds those and would miss the others.
+# Both, or neither is enough.
+
+title = "es-ares-jawa family — secret gate base"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "yoda-credential-inside-a-value"
+description = """A credential passed as a field INSIDE a value, where the key name says nothing.
+
+Found on 2026-09-11 in the documentation site's tree with its gate green:
+work_SLF_API_TOKEN_additional_param carried a username and a password as query-string fields
+while every credential-shaped key in the same object was already <REDACTED>. The key-name rule
+cannot see it, by construction.
+
+`[ \\t]*=[ \\t]*["']?` where the site first had a bare `=`, so that `api_key = "…"` in Python,
+`KEY="…"` in a `.env` file and `key = value` in a `.cfg` are all assignments. The widening was
+measured on es-ares-jawa-toolkit: it cost one placeholder line, exempted there by its shape, and
+put a second rule on the one real finding.
+
+`client[_-]?id` joined the list on 2026-09-16, for the reason it joined the key rule the same
+day: the id travels as a field of the very query string the client secret travels in, and the
+key that carries the pair is called `additional_param`. The example above is that shape."""
+regex = '''(?i)(username|password|passwd|client_secret|clientsecret|client[_-]?id|api[_-]?key|apikey|access[_-]?token|refresh[_-]?token|assertion)\\{0,2}[ \t]*=[ \t]*["']?((?:[^"'&\s,\\]|\\[^"&\s]){8,})'''
+secretGroup = 2
+keywords = ["password","passwd","username","client_secret","clientsecret","client_id","clientid","client-id","api_key","apikey","api-key","access_token","refresh_token","assertion"]
+
+  [[rules.allowlists]]
+  description = """The three shapes that legitimately follow a credential field name: a redaction
+  marker, a Camel or shell expression, and a Jasypt ciphertext — the last one found by running
+  this rule against es-ares-jawa-platform and es-ares-jawa-routes, where `password=ENC(...)`
+  lives in `.properties` files. Fixture: base_value_rule_shapes"""
+  regexTarget = "secret"
+  regexes = [
+    '''^[<\[]''',
+    '''^\$\{''',
+    '''^ENC[\\(:\[]''',
+  ]
+
+[[rules]]
+id = "yoda-credential-key-in-clear"
+description = """Value under a credential-shaped key that is not redacted, encrypted, a Bitwarden
+pointer or a reference.
+
+The separator is `:` or `=`. The site's `:` alone reads JSON and YAML; a source repository also
+writes `key = $[secret:name]` into `.cfg` files, `KEY=value` into `.env` files and
+`api_key="…"` in Python, and none of those would have been read. Measured cost of `=` on
+es-ares-jawa-toolkit: eight lines, all expressions rather than values, exempted there by
+their shapes.
+
+A CLIENT ID IS A CREDENTIAL HERE, added 2026-09-16. What decides in this family is the object the
+value lives in and not what the OAuth specification calls public: a Talend context file pairs the
+id with the client secret in the same properties file, every time. Neither keyword list named it
+until this line, and `…_id` is not `…_key`, so whether anything fired at all was left to the
+generic entropy rule, which needs more than 3.5 and does not reach a structured id.
+
+The corpus was re-measured rather than taken on trust, and it did not say what the report asking
+for the rule said. In es-ares-jawa-routes the two context files that report named carry their id
+as `ENC(…)`, which the block below already exempts — the lengths in the report were the
+ciphertext's — and the other ids of that length there are Bitwarden pointers. The clear-text one
+this rule moves from invisible to reported lives in the documentation site: 85 characters under a
+`:`, in a generated analysis file whose `client_secret` and `gravitee_api_key` two lines below are
+already `[REDACTED]`. The extractor's redaction list was missing exactly the key these rules were.
+
+THE FLOORS, AND WHAT THEY LET THROUGH. The sixteen-character floor on the value is what makes the
+`:`-or-`=` separator affordable — it is why the eight toolkit lines above are eight and not a
+page — and the decision taken with the client id was to leave it where it is rather than give one
+key a floor of its own. Measured 2026-09-16 over the seven repositories of this family that carry
+the gate, at their default branch: 657 lines hold a client-id-shaped key. 123 carry a value of
+sixteen characters or more, 60 carry a redaction marker the block below already exempts, and 474
+carry something shorter that no exemption covers — which is what a lower floor would report.
+Those 474 lines hold TWELVE distinct values between them: one nine-letter word on 371 of the
+lines, five more words of four to seven characters on another 89, and six values with punctuation
+on the remaining 14, the longest of those fifteen characters. A lower floor would cost 474
+findings to look twice at a dozen values, and a rule that turns seven repositories red is a rule
+that gets bypassed.
+
+Which floor applies depends on the separator, and this is the part worth saying out loud. For an
+`=` assignment the value rule above reads the same line with a floor of EIGHT, so an id of eight
+to fifteen characters written as `key=value` is still reported — measured on a routes context
+file whose id is eleven characters, which this rule does not see and that one does. What passes
+is an id under eight characters anywhere, and an id under sixteen written with a `:`, which is
+the JSON and YAML shape. Nothing in the family has either today. A repository that grows one
+closes it with a rule in its own `.gitleaks.toml`, where the measurement can be defended, and not
+by moving a floor that every other key here sits on."""
+regex = '''(?i)["`\\]{0,2}([a-z0-9_.\-]*(?:api[_-]?key|client[_-]?secret|client[_-]?id|gravitee[_-]?key|password|passwd|quota_user|assertion|access[_-]?token|refresh[_-]?token|id[_-]?token|credentials)[a-z0-9_.\-]*|[a-z0-9_.\-]*_key)["`\\]{0,2}[ \t]*[:=][ \t]*["`\\]{0,2}([^"`\s,]{16,})'''
+secretGroup = 2
+keywords = ["api_key","apikey","client_secret","client_id","clientid","client-id","gravitee_key","password","passwd","quota_user","assertion","access_token","refresh_token","id_token","credentials","_key"]
+
+  [[rules.allowlists]]
+  description = """The four legitimate shapes of a redacted value, both variants of each, plus
+  the three references that are not values at all: a Camel or shell expression, a context
+  lookup, a URL and a GCP resource name. `${…}` is here and not only on the value rule because
+  this rule reads an `=`: `access_token=${header.authorization}` is a Camel URI, measured in
+  es-ares-jawa-routes. Fixture: base_key_rule_shapes"""
+  regexTarget = "secret"
+  regexes = [
+    '''^<REDACTED>$''',
+    '''^\[REDACTED\]$''',
+    '''^(?i)bitwarden\s*=''',
+    '''^ENC[\\(:\[]''',
+    '''^\$\{''',
+    '''^context\.''',
+    '''^https?://''',
+    '''^projects/''',
+  ]
+
+  [[rules.allowlists]]
+  description = """A name, not a value — the site's measurement: 1,866 values under `*_ref` keys
+  hold the NAME of the variable or of the Bitwarden entry, 46 hold a `context.*` expression, and
+  two hold a UUID, which IS the credential. So the discriminator is the SHAPE of the value, never
+  the suffix of the key: excluding `*_ref` by name would have published those two.
+  Fixture: base_name_not_value"""
+  regexTarget = "secret"
+  regexes = [
+    '''^[A-Za-z][A-Za-z0-9]*(_[A-Za-z0-9]+)+$''',
+    '''^[a-z0-9\-]+(\.[a-z0-9\-]+)+$''',
+    '''^(/|\./|~/)''',
+  ]
+
+# ─────────────────────────────────────────────────────────────────────────────────────────
+# CODE, NOT CONFIGURATION. Three shapes that appear wherever a repository of this family holds
+# source: the value after `api_key =` is an expression the reader has to follow, not a value
+# anyone could use. They are in the base rather than in one repository's config because two
+# corpora measured the same three — es-ares-jawa-toolkit (Python) and the documentation site
+# (Python and TypeScript) — which is the bar for promoting a shape out of a repository.
+# Each applies to every rule, the generic one included, and names the fixture in
+# dev-secret-scan.sh that exercises it.
+
+[[allowlists]]
+description = """A dotted name: `settings.probe.api_key`, `env.AUTH_PASSWORD`, `os.environ`. A
+Python keyword argument or a TypeScript property read, never a credential.
+
+Each segment is capped at 24 characters and the whole must end there — a JWT is dots between
+base64 runs, and without the cap this would swallow one. Phase 1 plants a JWT for that reason.
+A trailing `)` or `;` is part of the shape, not of a value: `env.AUTH_PASSWORD;` is what a
+`const` line yields. Fixture: base_dotted_name"""
+regexTarget = "secret"
+regexes = ['''^[A-Za-z_][A-Za-z0-9_]{0,23}(\.[A-Za-z_][A-Za-z0-9_]{0,23})+[);]*$''']
+
+[[allowlists]]
+description = """A call expression: `os.environ.get(`, `subscription_key(`,
+`decodeCredentials(`. The credential is what the call returns at run time, which is the whole
+point — it is not in the file. Fixture: base_call_expression"""
+regexTarget = "secret"
+regexes = ['''^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*\(''']
+
+[[allowlists]]
+description = """A tuple, from `app_key = (app_ref.get('type'), app_ref.get('id'))`: the value
+starts where a credential cannot. Fixture: base_tuple_expression"""
+regexTarget = "secret"
+regexes = ['''^\(''']
+
+# ─────────────────────────────────────────────────────────────────────────────────────────
+# KARAF CONFIGURATION AND JVM DEFAULTS. Two shapes measured in three corpora each, which is the
+# bar for promoting a shape out of one repository's config and into the family's rules. Both
+# were carried locally first and moved here once the second and third corpus showed them.
+
+[[allowlists]]
+description = """A Felix ConfigAdmin interpolation pointer: `$[secret:<name>]`.
+
+Karaf resolves it at delivery time from a gitignored secrets directory, one file per secret,
+filename is the name and content is the value. What sits in the `.cfg` is therefore the NAME of
+a credential, in the same family as `${...}`, `ENC(...)` and a Bitwarden pointer, all three of
+which the value rule already exempts one section above. Both of our rules flag it.
+
+Promoted 2026-09-12 on three corpora, gitleaks 8.30.1: es-ares-jawa-docker (1, the worked
+example in `karaf/config/secrets/README.md`), es-ares-jawa-platform (5, in a route `.cfg` in the
+history) and es-ares-jawa-routes (10, tree and history). Anchored whole, so a pointer-shaped
+prefix in front of a real value is still a finding.
+
+The name may be a PATH, and on 2026-09-12 it never was. Every reference on those three corpora
+was a single segment; the toolkit now names a secret `<route>/<key>`
+(es-ares-jawa-toolkit#268) because the Karaf entrypoint materialises it at
+`/mnt/secrets/<route>/<key>`, one directory per route (es-ares-jawa-docker#28). Measured
+2026-09-15 in es-ares-jawa-routes, gitleaks 8.30.1: the two files `jawa route context-render`
+writes scored 11 findings, every one of them a reference of that shape and not a value — the
+gate had simply never met it. Each segment keeps the character class it always had, so what is
+admitted is a name with separators in it and not a wider alphabet.
+
+The anchor is what the second half of this block rests on, and widening the name does not move
+it: both spellings are planted as prefixes in front of a real value and both are still
+findings. Fixture: base_felix_secret_pointer"""
+regexTarget = "secret"
+regexes = ['''^\$\[secret:[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*\]$''']
+
+[[allowlists]]
+description = """The stock password of a Java trust store or key store, as a literal value.
+
+`changeit` is the JDK's own cacerts password and `password` the one the ActiveMQ sample
+`broker.ks`/`broker.ts` ship with. Both are printed in their vendor's documentation, which is
+what makes them not credentials: knowing one grants nothing that reading the manual would not.
+
+Promoted 2026-09-12 on three corpora, gitleaks 8.30.1: es-ares-jawa-platform and
+es-ares-jawa-routes both carry the identical `.mvn/jvm.config` line setting
+`javax.net.ssl.trustStorePassword` to the first word (1 each, tree and history), and
+es-ares-jawa-docker sets `javax.net.ssl.keyStorePassword` and its trust-store twin to the second,
+in the vendored `activemq/activemq_5.14.5/wrapper.conf` (2, tree and history).
+
+The whole value must be the word and nothing else, so a store password that merely STARTS with
+one of them is still a finding, and so is any store whose password somebody actually set.
+
+No example of the assignment itself appears above, deliberately: this file is scanned by the
+rules it declares, and an illustrative `<property>=<value>` line in its own prose would be a
+finding in it — the reason the block below exempts the gate's script but nothing exempts this
+one. Fixture: base_default_store_password"""
+regexTarget = "secret"
+regexes = ['''^(changeit|password)$''']
+
+[[allowlists]]
+description = """The gate's own script plants one credential per shape this family is known to
+leak, so that it is seen to go red before it is trusted to say green. The values in it are
+invented and it is the only file exempted for its content rather than for its shape."""
+paths = ['''(^|/)scripts/dev-secret-scan\.sh$''']

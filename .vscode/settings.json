@@ -1,0 +1,16 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "${workspaceFolder}/scripts:${workspaceFolder}/.venv/bin:${env:PATH}"
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "${workspaceFolder}/scripts:${workspaceFolder}/.venv/bin:${env:PATH}"
+    },
+    "files.exclude": {
+        "**/.agent/vendor": true
+    },
+    "search.exclude": {
+        "**/.agent/vendor": true
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
+    "python.terminal.activateEnvironment": true
+}
