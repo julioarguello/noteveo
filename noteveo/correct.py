@@ -21,13 +21,31 @@ def gain_at(params: Params, u: float, v: float) -> np.ndarray:
     )
 
 
-def corrected(params: Params, ratios: dict[str, np.ndarray]) -> tuple[list, list, list]:
-    """Ganancia, gain_x y gain_y que llevan cada lado a su objetivo (ganancia actual × cociente)."""
-    sides = list(POSITIONS)
+def corrected(
+    params: Params, ratios: dict[str, np.ndarray], sides: list[str] | None = None
+) -> tuple[list, list, list]:
+    """Ganancia, gain_x y gain_y que llevan cada lado a su objetivo (ganancia actual × cociente).
+
+    Solo cuentan los lados de `sides`: los que la imagen fija a la pared de detrás. Sin izquierda y
+    derecha a la vez no hay con qué medir la variación horizontal, y gain_x queda en 0; sin arriba,
+    lo mismo con gain_y.
+    """
+    sides = [s for s in (sides or list(POSITIONS)) if s in POSITIONS]
+    if not sides:
+        raise ValueError("ningún lado medible para corregir")
+    use_x = "left" in sides and "right" in sides
+    use_y = "top" in sides and len(sides) > 1
     targets = np.array([gain_at(params, *POSITIONS[s]) * ratios[s] for s in sides])
-    system = np.array([[1.0, POSITIONS[s][0] - 0.5, POSITIONS[s][1] - 0.5] for s in sides])
-    solution = np.linalg.solve(system, targets)  # filas: a, b, c; columnas: R, G, B
-    a, b, c = solution
+    columns = [np.ones(len(sides))]
+    if use_x:
+        columns.append(np.array([POSITIONS[s][0] - 0.5 for s in sides]))
+    if use_y:
+        columns.append(np.array([POSITIONS[s][1] - 0.5 for s in sides]))
+    system = np.column_stack(columns)
+    solution, *_ = np.linalg.lstsq(system, targets, rcond=None)  # filas: a, (b), (c)
+    a = solution[0]
+    b = solution[1] if use_x else np.zeros(3)
+    c = solution[-1] if use_y else np.zeros(3)
     if (a <= 0).any():
         raise ValueError("la corrección da una ganancia no positiva: la medida no es coherente")
     return a.tolist(), (b / a).tolist(), (c / a).tolist()

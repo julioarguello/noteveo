@@ -158,7 +158,8 @@ imagen corregida y una foto nueva, la diferencia baja.
 
 - **SC-001**: En una foto de calibración tomada por la tarde, la diferencia de color entre dentro y
   fuera del marco es como mucho la que el ojo apenas distingue (ΔE2000 ≤ 3) en cada lado
-  que toca pared (arriba, izquierda y derecha).
+  donde lo que se ve junto al marco es la pared de detrás. En esta pared son arriba e izquierda: a
+  la derecha asoma la cara lateral del hueco, en sombra, que la imagen no imita (research.md R4).
 - **SC-002**: Desde el sofá, por la tarde, Julio no ve dónde acaba la pantalla y empieza la pared en
   los lados donde la tele toca pared (sin contar el canto negro del marco).
 - **SC-003**: Regenerar la imagen con las mismas entradas da el mismo fotograma, byte a byte. Del

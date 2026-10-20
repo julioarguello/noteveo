@@ -52,3 +52,15 @@ def test_correction_closes_the_gap():
     after = measure(calibration_scene(new_inside, OUTSIDE), saturation=0.97)
     assert max(s.delta_e for s in after.values()) <= 1.0
     assert np.abs(gain_x).max() < 0.05 and np.abs(gain_y).max() < 0.05
+
+
+def test_free_side_does_not_pull_the_correction():
+    """La derecha muy oscura no cuenta si la imagen la deja libre: gain_x se queda en 0."""
+    p = make_params()
+    ratios = {"top": np.ones(3), "left": np.ones(3), "right": np.full(3, 0.3)}
+    gain, gain_x, gain_y = corrected(p, ratios, ["top", "left"])
+    assert gain == pytest.approx([1, 1, 1]) and gain_x == pytest.approx([0, 0, 0])
+    assert gain_y == pytest.approx([0, 0, 0], abs=1e-9)
+    # Control: con los tres lados, la derecha sí arrastra la corrección.
+    _, gain_x_all, _ = corrected(p, ratios)
+    assert min(gain_x_all) < -0.5

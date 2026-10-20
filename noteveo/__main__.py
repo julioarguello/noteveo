@@ -106,6 +106,8 @@ def cmd_render(args) -> int:
         "mp4_sha256": encode.sha256(clip) if clip.exists() and not args.no_clip else None,
         "apl": round(level, 2),
         "max_step": round(step, 4),
+        # Lados donde la imagen continúa la pared de detrás: los únicos que se calibran.
+        "fixed_sides": [s for s in SIDES if s in light.edges],
     }
     RENDER_INFO.write_text(json.dumps(info, indent=2) + "\n")
     print(f"wall.png  {info['png_sha256']}")
@@ -204,7 +206,11 @@ def cmd_measure(args) -> int:
         if new_file:
             writer.writeheader()
         writer.writerow(row)
-    worst = max(sides[side].delta_e for side in SIDES)
+    fixed = info.get("fixed_sides", list(SIDES))
+    free = [names[s] for s in SIDES if s not in fixed]
+    if free:
+        print(f"No cuenta para SC-001 (la imagen no continúa la pared ahí): {', '.join(free)}")
+    worst = max(sides[side].delta_e for side in fixed)
     print(f"Peor lado: ΔE2000 {worst:.2f} ({'cumple' if worst <= 3 else 'no cumple'} SC-001: ≤ 3)")
     return OK
 
@@ -224,7 +230,9 @@ def cmd_correct(args) -> int:
         )
         return USAGE
     ratios = {s: np.array([float(x) for x in last[f"ratio_{s}"].split("/")]) for s in SIDES}
-    gain, gain_x, gain_y = corrected(current, ratios)
+    fixed = json.loads(RENDER_INFO.read_text()).get("fixed_sides", list(SIDES))
+    gain, gain_x, gain_y = corrected(current, ratios, fixed)
+    print(f"Lados que se corrigen: {', '.join(fixed)}")
 
     def fmt(values):
         return "[" + ", ".join(f"{v:.4f}" for v in values) + "]"
