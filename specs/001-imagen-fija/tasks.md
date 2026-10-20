@@ -72,7 +72,7 @@ dependencias pendientes).
 
 ## Fase 5: Cierre
 
-- [ ] T027 [P] Actualizar el README: estado del nivel 2 y cómo se usa la herramienta (enlace a quickstart.md)
+- [x] T027 [P] Actualizar el README: estado del nivel 2 y cómo se usa la herramienta (enlace a quickstart.md)
 - [ ] T028 Pasar `make ci` y gitleaks, y recorrer `quickstart.md` de punta a punta
 
 ## Dependencias

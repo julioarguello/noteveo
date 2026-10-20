@@ -96,7 +96,9 @@ def cmd_render(args) -> int:
     preview = OUTPUT_DIR / "preview.jpg"
     cv2.imwrite(str(preview), wall.preview_in_photo(reference_rgb, light, current))
     print(f"Vista previa en la foto: {preview.relative_to(ROOT)}")
-    if not args.no_clip:
+    if args.no_clip:
+        clip.unlink(missing_ok=True)  # que push no suba un clip de otros parámetros
+    else:
         encode.encode_clip(png, clip, current.seconds)
     info = {
         "params_sha": params.digest(CONFIG_FILE),

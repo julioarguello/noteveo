@@ -22,6 +22,12 @@ Sony KD-65A8 del salón, medida por ADB por red el 2026-10-18.
 - **Reproduce vídeos propios desde el almacenamiento interno**: un clip copiado por ADB a
   `/sdcard/Movies/noteveo/` (Android lo indexa en MediaStore) se ve en bucle con la fuente «Vídeos
   locales» activada y las demás apagadas. Comprobado por Julio el 2026-10-20.
+- **La retirada automática sobrevive a cerrar ADB**: `push --minutes 3` a las 22:17 del
+  2026-10-20, `adb disconnect` enseguida; a las 22:20 la carpeta había vuelto sola a como estaba (el
+  clip de la pared fuera, el de prueba de vuelta, el script de retirada borrado y ningún `sleep`
+  vivo). El proceso lanzado con `nohup` desde `adb shell` sigue corriendo sin conexión.
+- **Arrancar el salvapantallas desde el Mac**: `com.android.systemui/.Somnambulator` existe en la
+  tele (2026-10-20), pero no se ha lanzado todavía.
 - Antes estaba **Sony Living Decor** (`com.sony.dtv.livingfit`, v2.37.15), el salvapantallas decorativo de Sony. No sabemos si deja poner fotos propias: no se ha mirado.
 - Salta a los 5 minutos sin uso (`screen_off_timeout` = 300000). La tele se apaga a las 4 h (`sleep_timeout`).
 
