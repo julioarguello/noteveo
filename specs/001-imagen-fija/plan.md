@@ -31,7 +31,7 @@ clips en `entrada/` y `salida/`, fuera de git
 **Objetivos de rendimiento**: una vuelta de calibración (medir, corregir, generar, copiar) en menos de
 2 minutos en el Mac, para que lo lento sea hacer la foto y no esperar al script
 
-**Restricciones**: salida bit a bit idéntica con las mismas entradas (SC-003); ningún borde de alto
+**Restricciones**: el fotograma sale idéntico byte a byte con las mismas entradas (SC-003); ningún borde de alto
 contraste en la imagen (constitución III); nada de la casa en git (constitución V)
 
 **Escala**: una tele, una pared, una persona que calibra
@@ -44,12 +44,12 @@ contraste en la imagen (constitución III); nada de la casa en git (constitució
 |---|---|---|
 | I. Idioma | Código y órdenes en inglés; mensajes del programa, specs y docs en castellano | Cumple |
 | II. De menos a más | El reproductor está probado (2026-10-20); 001 es el primer contenido y es una imagen fija, lo más simple | Cumple |
-| III. La OLED manda | Superficie suave sin bordes (R4); la prueba se retira sola (R7); el script informa del APL (R6) | Cumple; la retirada automática está por medir |
+| III. La OLED manda | Bordes: diferencia entre píxeles vecinos ≤ 1 nivel de 10 bits, comprobada por un test (SC-005). Quietud: es una imagen de prueba que se retira sola (R7). Brillo: el script informa del APL (R6) | Parcial: el APL no tiene umbral hasta la primera medida; la retirada automática está por medir |
 | IV. Todo sale de un script | Esquinas, máscaras, degradado y curvas en `config/wall.toml`; ninguna edición de imagen a mano | Cumple |
 | V. La casa no se publica | `entrada/` y `salida/` ignorados; tests sintéticos; un test falla si git sigue una imagen o un vídeo | Cumple |
 | VI. Se mide en la tele | Cada vuelta de calibración guarda fecha, hora y ajustes de la tele; los ajustes se apuntan en `docs/medidas-tele.md` | Cumple |
 
-Después del diseño: sin cambios. No hay infracciones que justificar.
+Después del diseño: sin cambios. La desviación de III se explica en «Seguimiento de complejidad».
 
 ## Estructura del proyecto
 
@@ -89,7 +89,8 @@ tests/
 ├── test_wall.py
 ├── test_measure.py
 ├── test_correct.py
-├── test_determinism.py  # SC-003
+├── test_determinism.py  # SC-003: el fotograma, no el clip
+├── test_edges.py        # SC-005
 └── test_privacy.py      # git no sigue imágenes ni vídeos
 ```
 
@@ -99,4 +100,6 @@ números, así que van en git; las imágenes no.
 
 ## Seguimiento de complejidad
 
-Sin infracciones de la constitución.
+| Desviación | Por qué | Alternativa descartada |
+|---|---|---|
+| III.4: el APL no tiene umbral | Sin una medida en la tele no se sabe a partir de qué nivel actúa el ABL; un número inventado sería peor que ninguno | Fijar un umbral de una ficha técnica: no es una medida (principio VI) |

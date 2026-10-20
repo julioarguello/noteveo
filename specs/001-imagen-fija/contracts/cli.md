@@ -16,8 +16,10 @@ Propone las esquinas de la pantalla en la foto de referencia y las escribe en `c
 
 Genera `salida/wall.png` y `salida/wall.mp4` desde `config/wall.toml`.
 
-- Imprime la huella SHA-256 de los dos ficheros y el APL de la imagen.
-- Misma entrada y mismos parámetros dan la misma huella (SC-003).
+- Imprime la huella SHA-256 de los dos ficheros, el APL y el mayor salto entre píxeles vecinos.
+- Misma entrada y mismos parámetros dan la misma huella de `wall.png` (SC-003). La de `wall.mp4` se
+  informa, sin garantía.
+- Falla con `1` si el mayor salto entre píxeles vecinos supera un nivel de 10 bits (SC-005).
 
 ## `push`
 

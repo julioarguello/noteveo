@@ -26,7 +26,8 @@ Esperado: ruff limpio y pytest en verde. `test_privacy.py` falla si git sigue al
 .venv/bin/python -m noteveo render
 ```
 
-Esperado: las dos ejecuciones de `render` imprimen la misma huella. `salida/locate.png` muestra el
+Esperado: las dos ejecuciones de `render` imprimen la misma huella de `wall.png` y un salto máximo
+entre píxeles vecinos de un nivel o menos. `salida/locate.png` muestra el
 contorno sobre la pantalla.
 
 ## 3. Se ve en la tele (Historia 1)

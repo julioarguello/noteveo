@@ -14,6 +14,7 @@ Lo que se guarda y dónde. Lo que va en git son números; las imágenes nunca (c
 | `color.base_lightness` | L\* de partida (NCS S 0300-N) | 0 a 100; 95,9 al empezar |
 | `color.gain` | Ganancia lineal por canal (R, G, B) y su variación de lado a lado | Positivas |
 | `output.frames`, `output.seconds` | Duración del clip | `seconds` ≥ 1 |
+| `oled.apl_max` | APL máximo admitido | Vacío hasta la primera medida en la tele (FR-010) |
 
 Cada corrección (orden `correct`) reescribe `color.gain` y deja el cambio a la vista en el diff.
 
@@ -21,7 +22,8 @@ Cada corrección (orden `correct`) reescribe `color.gain` y deja el cambio a la 
 
 - `salida/wall.png`: fotograma de 3840×2160 en 16 bits, para mirarlo en el Mac.
 - `salida/wall.mp4`: el clip que va a la tele (HEVC 10 bits, BT.709).
-- Se acompañan de su huella SHA-256, que se imprime al generarlos (SC-003).
+- Se acompañan de su huella SHA-256, que se imprime al generarlos. Solo la de `wall.png` tiene que
+  repetirse (SC-003).
 
 ## Foto de calibración — `entrada/` (fuera de git)
 

@@ -109,7 +109,8 @@ imagen corregida y una foto nueva, la diferencia baja.
 - **FR-002**: La imagen tiene la resolución del panel, 3840×2160, y sale en `salida/`.
 - **FR-003**: Lo que muestra es la pared que la tele tapa vista desde el sofá: el degradado de luz
   dentro del marco continúa el de la pared de alrededor en los lados
-  que tocan pared: arriba, izquierda y derecha. Abajo está el mueble de madera.
+  que tocan pared: arriba, izquierda y derecha. Abajo, entre la tele y el mueble de madera, queda
+  una franja de pared demasiado estrecha para medirla desde el sofá.
 - **FR-004**: El color de partida de la pared es el de su pintura, NCS S 0300-N (blanco neutro,
   mate). La foto aporta la luz (cómo varía el brillo por la pared), no el color.
 - **FR-005**: Con las mismas entradas y parámetros, el script genera la misma imagen.
@@ -128,8 +129,9 @@ imagen corregida y una foto nueva, la diferencia baja.
 - **FR-009**: La imagen fija solo está en la tele durante una prueba. Al terminar, el salvapantallas
   vuelve a lo que tenía antes. Ninguna imagen fija de esta spec queda como salvapantallas sin
   supervisión (constitución III).
-- **FR-010**: El script informa del nivel medio de brillo de la imagen, para vigilar que la tele no
-  baje el brillo global al mostrarla.
+- **FR-010**: El script informa del nivel medio de brillo de la imagen (APL), para vigilar que la
+  tele no baje el brillo global al mostrarla. El umbral se fija con la primera medida en la tele y
+  se apunta en los parámetros (constitución III.4).
 - **FR-011**: La imagen llega a la tele por ADB, a la carpeta que lee el salvapantallas (carpeta y modo
   en `docs/medidas-tele.md`).
 
@@ -159,9 +161,13 @@ imagen corregida y una foto nueva, la diferencia baja.
   que toca pared (arriba, izquierda y derecha).
 - **SC-002**: Desde el sofá, por la tarde, Julio no ve dónde acaba la pantalla y empieza la pared en
   los lados donde la tele toca pared (sin contar el canto negro del marco).
-- **SC-003**: Regenerar la imagen con las mismas entradas da un fichero idéntico.
+- **SC-003**: Regenerar la imagen con las mismas entradas da el mismo fotograma, byte a byte. Del
+  clip se informa la huella, pero no se exige igual: el codificador de vídeo no lo garantiza.
 - **SC-004**: Una vuelta de calibración (foto, medida, imagen nueva, copia a la tele) se hace sin
   editar nada a mano.
+- **SC-005**: En la imagen generada, antes del tramado que evita las bandas, dos píxeles vecinos no
+  se diferencian en más de un nivel de 10 bits: no hay bordes que puedan marcar la OLED
+  (constitución III.1).
 
 ## Suposiciones
 
