@@ -16,7 +16,7 @@ y corrige los parámetros, hasta que cuadra. Decisiones y fuentes en [research.m
 
 **Lenguaje/versión**: Python 3.12 (`.venv/`)
 
-**Dependencias principales**: numpy, opencv-python-headless, colour-science, rawpy; `ffmpeg`
+**Dependencias principales**: numpy, opencv-python-headless, rawpy, exifread; `ffmpeg`
 (libx265) y `adb` como programas externos
 
 **Almacenamiento**: ficheros. Parámetros y medidas en texto dentro del repositorio; fotos, imágenes y
@@ -78,8 +78,9 @@ noteveo/
 ├── __main__.py          # python -m noteveo <orden>
 ├── params.py            # leer y escribir config/wall.toml
 ├── color.py             # sRGB ↔ lineal ↔ Lab y ΔE2000
+├── photo.py             # fotos en luz lineal (DNG, JPEG) y EXIF
 ├── geometry.py          # esquinas de la pantalla, homografía, máscaras
-├── wall.py              # superficie de luz y render de la pared en luz lineal
+├── wall.py              # perfiles de borde, membrana (Laplace) y render en luz lineal
 ├── encode.py            # fotograma a clip HEVC 10 bits con ffmpeg
 ├── measure.py           # franjas dentro/fuera, ΔE2000, rechazo de fotos
 ├── correct.py           # cociente por canal a corrección de parámetros

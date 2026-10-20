@@ -1,0 +1,44 @@
+# Parámetros de la imagen de la pared (specs/001-imagen-fija/data-model.md).
+# Los escriben las órdenes locate y correct; se pueden ajustar a mano, son texto.
+
+[reference]
+photo = "PXL_20261020_130130671.jpg"
+
+[screen]
+# Esquinas en la foto: arriba-izquierda, arriba-derecha, abajo-derecha, abajo-izquierda.
+corners = [[1504.4, 1198.3], [3162.7, 1198.5], [3163.7, 2176.6], [1514.6, 2202.7]]
+
+[masks]
+# Polígonos en la foto que no son pared.
+flores = [[600.0, 600.0], [1650.0, 600.0], [1650.0, 1150.0], [1330.0, 1150.0], [1330.0, 2300.0], [600.0, 2300.0]]
+lateral_hueco = [[3170.0, 1100.0], [3420.0, 1100.0], [3420.0, 2250.0], [3170.0, 2250.0]]
+mueble_colgado = [[1700.0, 450.0], [3400.0, 450.0], [3400.0, 1115.0], [1700.0, 1115.0]]
+mueble_madera = [[500.0, 2150.0], [3500.0, 2150.0], [3500.0, 3000.0], [500.0, 3000.0]]
+
+[ring]
+# Anillo de pared alrededor del marco, en % del ancho de la pantalla.
+gap = 1.0
+width = 4.0
+
+[light]
+# Suavizado a lo largo de cada borde, en % del ancho de la pantalla.
+smoothing = 3.0
+
+[color]
+# Nivel lineal medio de la pared en la tele (0 a 1). La pintura, NCS S 0300-N, es neutra:
+# no tiñe; el tinte y el nivel los fija la calibración (research.md R2).
+level = 0.25
+# Ganancia lineal por canal (R, G, B) y su variación de izquierda a derecha (x)
+# y de arriba abajo (y), relativa al centro.
+gain = [1.0, 1.0, 1.0]
+gain_x = [0.0, 0.0, 0.0]
+gain_y = [0.0, 0.0, 0.0]
+
+[output]
+seconds = 10
+
+[tv]
+device = "192.168.1.49:5555"
+
+[oled]
+# APL máximo admitido; sin valor hasta la primera medida en la tele (FR-010).
