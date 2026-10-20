@@ -13,7 +13,7 @@
 
 ## Requisitos completos
 
-- [ ] No quedan marcas [NEEDS CLARIFICATION]
+- [x] No quedan marcas [NEEDS CLARIFICATION]
 - [x] Los requisitos se pueden probar y no son ambiguos
 - [x] Los criterios de éxito se pueden medir
 - [x] Los criterios de éxito no dependen de la tecnología
@@ -31,8 +31,7 @@
 
 ## Notas
 
-- Queda una aclaración abierta (Historia 3: qué elemento aporta la imagen). Se resuelve con Julio
-  antes de `/speckit-plan`.
+- La aclaración sobre qué aporta la imagen se cerró el 2026-10-20: nada en 001, planta en 002.
 - La spec nombra ADB y Aerial Views. No son una elección de implementación: son la tele y el
   reproductor que ya existen (nivel 1 de la constitución, principio II). «Script» se refiere al
   principio IV y no elige lenguaje.

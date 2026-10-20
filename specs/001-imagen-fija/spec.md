@@ -19,9 +19,8 @@ columna blanca que llega casi al canto de la tele; debajo, el mueble de madera s
 sus patas. Lo que la pantalla tiene que mostrar es la pared que tapa, que es lisa: el trabajo no está
 en inventar textura, sino en que el tono y la luz cuadren con la pared que se ve alrededor del marco.
 
-Julio no quiere solo pared: prefiere que la imagen aporte algo, como unas plantas o una balda que
-convierta el marco de la tele en parte del mueble. Ese elemento choca con la constitución (principio
-III): una balda es justo el borde fijo de alto contraste que más marca una OLED.
+Julio no quiere solo pared: prefiere que la imagen aporte algo, como unas plantas. Eso llega con el
+vídeo (spec 002); esta spec deja la pared sola para medir una cosa cada vez (ver Aclaraciones).
 
 Esta spec es la primera prueba en la tele. Comprueba que se puede igualar el tono antes de invertir en
 movimiento (spec 002).
@@ -34,6 +33,13 @@ movimiento (spec 002).
   → R: Sí para esta spec. Son del 2026-10-20 a las 15:01 (hora de Madrid, según el EXIF), no de la
   mañana. Sirven para la geometría y la composición. El tono no se saca de ellas, sino de las fotos de
   calibración (Historia 2), que se hacen con la imagen ya puesta en la tele.
+- P: ¿Qué aporta la imagen además de la pared? → R: Nada en 001: solo pared, para que
+  la prueba conteste una sola pregunta (si el tono se puede igualar). La planta llega en 002, donde
+  su sombra se mueve; la balda se descarta por ser un borde fijo de alto contraste (constitución III).
+- P: ¿Se conoce el color de la pared? → R: Sí. El salón está pintado en **NCS S 0300-N, mate**
+  (lista de colores del pintor, 2026-08-25, en el Dropbox de Julio). Es un blanco neutro: el tinte que
+  se ve en la pared viene de la luz, no de la pintura. Al ser mate, la pared no tiene brillos que
+  imitar.
 
 ## Escenarios de uso y pruebas *(obligatorio)*
 
@@ -81,26 +87,6 @@ imagen corregida y una foto nueva, la diferencia baja.
 
 ---
 
-### Historia 3 - Algo que aporte (Prioridad: P2)
-
-Sobre la pared aparece [NEEDS CLARIFICATION: qué elemento: plantas detrás de la tele, una balda que
-convierta el canto inferior del marco en su borde, o nada en 001 y dejarlo para el vídeo].
-
-**Por qué esta prioridad**: Julio lo pidió, pero solo tiene sentido sobre una pared que ya cuadra
-(Historia 1).
-
-**Prueba independiente**: el elemento se ve desde el sofá como parte de la habitación (apoyado en
-algo, con su sombra hacia donde cae la luz) y no como una pegatina.
-
-**Escenas de aceptación**:
-
-1. **Dada** la imagen calibrada, **cuando** se añade el elemento, **entonces** la pared alrededor
-   del elemento mantiene la calibración de la Historia 2.
-2. **Dado** el elemento, **cuando** se analiza la imagen, **entonces** ningún borde suyo supera el
-   contraste máximo que fija el plan (principio III de la constitución).
-
----
-
 ### Casos límite
 
 - **Reflejos**: la pantalla es brillante y refleja la habitación (se ve en las fotos de `entrada/`).
@@ -111,8 +97,8 @@ algo, con su sombra hacia donde cae la luz) y no como una pegatina.
   la spec solo exige la tarde.
 - **Otro asiento**: desde otro sitio la perspectiva no casa. Se acepta.
 - **El marco y las patas siguen ahí**: el canto negro de la tele y sus patas no desaparecen con
-  ninguna imagen. Es la razón de la idea de la balda (Historia 3).
-- **Imagen fija olvidada**: si la prueba se deja puesta, marca la pantalla. Ver FR-008.
+  ninguna imagen. Se acepta en 001.
+- **Imagen fija olvidada**: si la prueba se deja puesta, marca la pantalla. Ver FR-009.
 
 ## Requisitos *(obligatorio)*
 
@@ -123,30 +109,32 @@ algo, con su sombra hacia donde cae la luz) y no como una pegatina.
 - **FR-002**: La imagen tiene la resolución del panel, 3840×2160, y sale en `salida/`.
 - **FR-003**: Lo que muestra es la pared que la tele tapa vista desde el sofá: el degradado de luz
   dentro del marco continúa el de la pared de alrededor en los cuatro lados.
-- **FR-004**: Con las mismas entradas y parámetros, el script genera la misma imagen.
+- **FR-004**: El color de partida de la pared es el de su pintura, NCS S 0300-N (blanco neutro,
+  mate). La foto aporta la luz (cómo varía el brillo por la pared), no el color.
+- **FR-005**: Con las mismas entradas y parámetros, el script genera la misma imagen.
 
 ### Calibración
 
-- **FR-005**: Un script mide, en una foto de calibración, la diferencia de color entre una franja
+- **FR-006**: Un script mide, en una foto de calibración, la diferencia de color entre una franja
   justo dentro y otra justo fuera del marco, en cada lado, y la informa por lado.
-- **FR-006**: El script convierte esa medida en una corrección de los parámetros de FR-001. Julio
+- **FR-007**: El script convierte esa medida en una corrección de los parámetros de FR-001. Julio
   puede ver qué cambia antes de aplicarla.
-- **FR-007**: Una foto de calibración que no sirve (marco no localizado, zonas quemadas, exposición
+- **FR-008**: Una foto de calibración que no sirve (marco no localizado, zonas quemadas, exposición
   distinta a la de la anterior sin decirlo) se rechaza con el motivo.
 
 ### OLED y entrega
 
-- **FR-008**: La imagen fija solo está en la tele durante una prueba. Al terminar, el salvapantallas
+- **FR-009**: La imagen fija solo está en la tele durante una prueba. Al terminar, el salvapantallas
   vuelve a lo que tenía antes. Ninguna imagen fija de esta spec queda como salvapantallas sin
   supervisión (constitución III).
-- **FR-009**: El script informa del nivel medio de brillo de la imagen, para vigilar que la tele no
+- **FR-010**: El script informa del nivel medio de brillo de la imagen, para vigilar que la tele no
   baje el brillo global al mostrarla.
-- **FR-010**: La imagen llega a la tele por ADB, a la carpeta que lee el salvapantallas (carpeta y modo
+- **FR-011**: La imagen llega a la tele por ADB, a la carpeta que lee el salvapantallas (carpeta y modo
   en `docs/medidas-tele.md`).
 
 ### Privacidad
 
-- **FR-011**: Ni las fotos, ni la imagen, ni recortes o miniaturas de ellas entran en git, issues o
+- **FR-012**: Ni las fotos, ni la imagen, ni recortes o miniaturas de ellas entran en git, issues o
   pull requests (constitución V). Lo que se informa del avance son números, no imágenes.
 
 ### Entidades clave
@@ -154,7 +142,7 @@ algo, con su sombra hacia donde cae la luz) y no como una pegatina.
 - **Foto de referencia**: foto de la pared desde el sofá con la tele apagada. Da la geometría: dónde
   está el marco y cómo cae la luz.
 - **Parámetros**: texto en el repositorio con todo lo que decide la imagen: recorte, perspectiva,
-  degradado, curvas de color y el elemento de la Historia 3.
+  degradado y curvas de color.
 - **Imagen de pared**: el resultado, 3840×2160, en `salida/`.
 - **Foto de calibración**: tele con la imagen puesta y pared, desde el sofá, con exposición y
   balance de blancos fijos.

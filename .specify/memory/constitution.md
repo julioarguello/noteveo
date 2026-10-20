@@ -81,7 +81,7 @@ El repositorio es público.
 | Spec | Qué |
 |---|---|
 | 001 | Imagen fija de la pared compuesta y calibrada, probada en la tele. |
-| 002 | Vídeo en bucle a partir de 001: deriva, luz que cambia, sombra de planta. |
+| 002 | Vídeo en bucle a partir de 001: deriva, luz que cambia y una planta con su sombra. |
 | 003 | App propia, solo si 002 demuestra que hace falta (principio II). |
 
 ## Gobierno
