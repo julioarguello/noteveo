@@ -51,8 +51,8 @@ el blanco de dentro del marco sigue al de fuera, y la luz cae igual que sobre la
 **Por qué esta prioridad**: es el proyecto entero. Si el tono no cuadra en una imagen quieta, no
 cuadrará en un vídeo.
 
-**Prueba independiente**: con la imagen en la tele, una foto desde el sofá muestra los cuatro lados
-del marco sin salto de tono entre dentro y fuera.
+**Prueba independiente**: con la imagen en la tele, una foto desde el sofá muestra los lados del
+marco que tocan pared sin salto de tono entre dentro y fuera.
 
 **Escenas de aceptación**:
 
@@ -80,7 +80,7 @@ imagen corregida y una foto nueva, la diferencia baja.
 **Escenas de aceptación**:
 
 1. **Dada** una foto de calibración, **cuando** se pasa al script, **entonces** informa de la
-   diferencia de color en cada uno de los cuatro lados del marco y de la corrección que aplica.
+   diferencia de color en cada lado del marco que toca pared y de la corrección que aplica.
 2. **Dada** una foto movida o con la exposición en automático (la pared quemada o el marco sin
    localizar), **cuando** se pasa al script, **entonces** la rechaza diciendo por qué, sin generar una
    corrección.
@@ -108,7 +108,8 @@ imagen corregida y una foto nueva, la diferencia baja.
   texto guardados en el repositorio, sin ningún paso a mano (constitución IV).
 - **FR-002**: La imagen tiene la resolución del panel, 3840×2160, y sale en `salida/`.
 - **FR-003**: Lo que muestra es la pared que la tele tapa vista desde el sofá: el degradado de luz
-  dentro del marco continúa el de la pared de alrededor en los cuatro lados.
+  dentro del marco continúa el de la pared de alrededor en los lados
+  que tocan pared: arriba, izquierda y derecha. Abajo está el mueble de madera.
 - **FR-004**: El color de partida de la pared es el de su pintura, NCS S 0300-N (blanco neutro,
   mate). La foto aporta la luz (cómo varía el brillo por la pared), no el color.
 - **FR-005**: Con las mismas entradas y parámetros, el script genera la misma imagen.
@@ -116,7 +117,7 @@ imagen corregida y una foto nueva, la diferencia baja.
 ### Calibración
 
 - **FR-006**: Un script mide, en una foto de calibración, la diferencia de color entre una franja
-  justo dentro y otra justo fuera del marco, en cada lado, y la informa por lado.
+  justo dentro y otra justo fuera del marco, en cada lado que toca pared, y la informa por lado.
 - **FR-007**: El script convierte esa medida en una corrección de los parámetros de FR-001. Julio
   puede ver qué cambia antes de aplicarla.
 - **FR-008**: Una foto de calibración que no sirve (marco no localizado, zonas quemadas, exposición
@@ -154,8 +155,8 @@ imagen corregida y una foto nueva, la diferencia baja.
 ### Resultados medibles
 
 - **SC-001**: En una foto de calibración tomada por la tarde, la diferencia de color entre dentro y
-  fuera del marco es como mucho la que el ojo apenas distingue (ΔE2000 ≤ 3) en cada uno de los
-  cuatro lados.
+  fuera del marco es como mucho la que el ojo apenas distingue (ΔE2000 ≤ 3) en cada lado
+  que toca pared (arriba, izquierda y derecha).
 - **SC-002**: Desde el sofá, por la tarde, Julio no ve dónde acaba la pantalla y empieza la pared en
   los lados donde la tele toca pared (sin contar el canto negro del marco).
 - **SC-003**: Regenerar la imagen con las mismas entradas da un fichero idéntico.
