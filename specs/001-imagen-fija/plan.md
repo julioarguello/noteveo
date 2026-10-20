@@ -77,6 +77,7 @@ calibracion/
 noteveo/
 ├── __main__.py          # python -m noteveo <orden>
 ├── params.py            # leer y escribir config/wall.toml
+├── color.py             # sRGB ↔ lineal ↔ Lab y ΔE2000
 ├── geometry.py          # esquinas de la pantalla, homografía, máscaras
 ├── wall.py              # superficie de luz y render de la pared en luz lineal
 ├── encode.py            # fotograma a clip HEVC 10 bits con ffmpeg
@@ -85,6 +86,7 @@ noteveo/
 └── tv.py                # adb: poner, quitar, retirada automática
 tests/
 ├── synthetic.py         # escenas sintéticas (nunca fotos de la casa)
+├── test_color.py
 ├── test_geometry.py
 ├── test_wall.py
 ├── test_measure.py

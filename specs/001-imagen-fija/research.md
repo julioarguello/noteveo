@@ -67,10 +67,9 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
   lados.
 - **ΔE2000** se calcula con `colour-science`, sobre Lab obtenido de la foto suponiendo primarios
   sRGB. La foto solo sirve para comparar dentro con fuera; el valor absoluto no importa.
-- **Foto de calibración**: el Pixel 7a saca RAW (DNG) con la cámara principal (ficha en
-  [photoworkout.com](https://www.photoworkout.com/?p=221493), consultada el 2026-10-20). Se prefiere
-  DNG (lineal, sin el tono del procesado del móvil). Si no, JPEG con exposición y balance de blancos
-  bloqueados (pulsación larga). El script rechaza fotos con zonas quemadas en las franjas.
+- **Foto de calibración**: en DNG. El Pixel 7a de Julio tiene la opción «RAW + JPEG» en Cámara →
+  Ajustes → Avanzado (comprobado por Julio el 2026-10-20). El DNG es lineal y no lleva el tono del
+  procesado del móvil. El JPEG que sale al lado solo sirve para mirarlo. El script rechaza fotos con zonas quemadas en las franjas.
 - **Localizar el marco en la foto de calibración**: el canto negro de la tele es la línea oscura entre
   dos zonas claras. Si eso falla, el clip lleva un primer segundo con cuatro marcas en las esquinas y
   se hace una foto en ese segundo.
