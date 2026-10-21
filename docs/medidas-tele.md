@@ -19,6 +19,9 @@ Sony KD-65A8 del salón, medida por ADB por red el 2026-10-18.
 
 - **Aerial Views se elige desde el menú**, sin ADB: Ajustes → Salvapantallas. Comprobado: después de elegirla, `screensaver_components` vale `com.neilturner.aerialviews/com.neilturner.aerialviews.ui.screensaver.DreamActivity`.
 - Versión instalada: 1.8.5 desde Google Play. **Esa versión pide API 29 como mínimo, justo la de la tele**: si una versión futura sube el mínimo, Play dejará de actualizarla. La 1.8.5 sigue funcionando; conviene guardar su APK.
+- **Reproduce vídeos propios desde el almacenamiento interno**: un clip copiado por ADB a
+  `/sdcard/Movies/noteveo/` (Android lo indexa en MediaStore) se ve en bucle con la fuente «Vídeos
+  locales» activada y las demás apagadas. Comprobado por Julio el 2026-10-20.
 - Antes estaba **Sony Living Decor** (`com.sony.dtv.livingfit`, v2.37.15), el salvapantallas decorativo de Sony. No sabemos si deja poner fotos propias: no se ha mirado.
 - Salta a los 5 minutos sin uso (`screen_off_timeout` = 300000). La tele se apaga a las 4 h (`sleep_timeout`).
 
