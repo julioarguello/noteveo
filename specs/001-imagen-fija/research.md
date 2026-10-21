@@ -118,4 +118,5 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
 - **Fuera de Python**: `ffmpeg` con `libx265` (el clip de prueba se generó con él el 2026-10-18) y
   `adb`. En el Mac, el daemon de `adb` arranca fuera del sandbox de Claude Code (`docs/medidas-tele.md`).
 - **Pruebas sin fotos de la casa**: los tests generan sus propias escenas sintéticas (un rectángulo
-  oscuro sobre un degradado) y nunca leen `entrada/` (constitución V).
+  oscuro sobre un degradado) y nunca leen `entrada/`. Desde el 2026-10-21 hay además casos reales:
+  las cuatro fotos del salón, reducidas y sin metadatos, en `tests/fixtures/salon/` (constitución V).

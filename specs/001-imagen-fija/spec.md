@@ -138,7 +138,8 @@ imagen corregida y una foto nueva, la diferencia baja.
 ### Privacidad
 
 - **FR-012**: Ni las fotos, ni la imagen, ni recortes o miniaturas de ellas entran en git, issues o
-  pull requests (constitución V). Lo que se informa del avance son números, no imágenes.
+  pull requests, salvo las copias reducidas y sin metadatos de los tests (constitución V, desde la
+  2.0.0 del 2026-10-21). Nada publicado lleva la ubicación.
 
 ### Entidades clave
 

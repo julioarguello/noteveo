@@ -1,6 +1,6 @@
 # Modelo de datos: Imagen fija de la pared
 
-Lo que se guarda y dónde. Lo que va en git son números; las imágenes nunca (constitución V).
+Lo que se guarda y dónde. Lo que va en git son números; de las imágenes, solo las copias sin metadatos de los tests (constitución V).
 
 ## Parámetros — `config/wall.toml` (en git)
 

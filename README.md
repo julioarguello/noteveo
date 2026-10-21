@@ -47,7 +47,7 @@ El recorrido completo está en [quickstart.md](specs/001-imagen-fija/quickstart.
 
 | Carpeta | Contenido |
 |---|---|
-| `entrada/` | Fotos originales de la pared y de calibración. **No se publican**: fuera de git. |
+| `entrada/` | Fotos originales de la pared y de calibración, con GPS: fuera de git. Las copias reducidas y sin metadatos están en `tests/fixtures/salon/`. |
 | `salida/` | Imágenes y vídeos generados. Fuera de git: también muestran la casa. |
 | `config/` | Parámetros de la imagen, en texto (`wall.toml`). |
 | `calibracion/` | Una fila por foto de calibración medida (`medidas.csv`). |

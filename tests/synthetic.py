@@ -1,4 +1,4 @@
-"""Escenas sintéticas para los tests. Nunca se leen fotos de entrada/ (constitución V)."""
+"""Escenas sintéticas para los tests; los casos reales están en tests/fixtures/salon/."""
 
 import cv2
 import numpy as np

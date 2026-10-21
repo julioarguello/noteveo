@@ -35,3 +35,6 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 .ruff_cache/
+
+# Fotos reales reducidas y sin metadatos para los tests (constitución V).
+!tests/fixtures/salon/*.jpg

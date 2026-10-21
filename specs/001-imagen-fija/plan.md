@@ -32,7 +32,7 @@ clips en `entrada/` y `salida/`, fuera de git
 2 minutos en el Mac, para que lo lento sea hacer la foto y no esperar al script
 
 **Restricciones**: el fotograma sale idéntico byte a byte con las mismas entradas (SC-003); ningún borde de alto
-contraste en la imagen (constitución III); nada de la casa en git (constitución V)
+contraste en la imagen (constitución III); de la casa, solo fotos reducidas y sin metadatos en git (constitución V)
 
 **Escala**: una tele, una pared, una persona que calibra
 
