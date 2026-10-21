@@ -1,6 +1,6 @@
 # Modelo de datos: Imagen fija de la pared
 
-Lo que se guarda y dónde. Lo que va en git son números; las imágenes nunca (constitución V).
+Lo que se guarda y dónde. Lo que va en git son números; de las imágenes, solo las copias sin metadatos de los tests (constitución V).
 
 ## Parámetros — `config/wall.toml` (en git)
 
@@ -10,10 +10,11 @@ Lo que se guarda y dónde. Lo que va en git son números; las imágenes nunca (c
 | `screen.corners` | Cuatro esquinas de la pantalla en la foto, en píxeles, en orden: arriba-izquierda, arriba-derecha, abajo-derecha, abajo-izquierda | Cuadrilátero convexo dentro de la foto |
 | `masks.<nombre>` | Polígonos que no son pared (mueble colgado, columna, mueble de madera, jarrón) | Cada uno con tres puntos o más |
 | `ring.width` | Ancho del anillo de pared alrededor del marco, en % del ancho de la pantalla | Mayor que 0 |
-| `light.degree` | Grado de la superficie de luz | 1 a 3; más alto podría crear ondas |
-| `color.base_lightness` | L\* de partida (NCS S 0300-N) | 0 a 100; 95,9 al empezar |
+| `light.smoothing` | Suavizado de cada perfil de borde, en % del ancho de la pantalla | Mayor que 0, hasta 20 |
+| `color.level` | Nivel lineal medio de la pared en la tele | Mayor que 0, hasta 1; 0,25 al empezar |
 | `color.gain` | Ganancia lineal por canal (R, G, B) y su variación de lado a lado | Positivas |
-| `output.frames`, `output.seconds` | Duración del clip | `seconds` ≥ 1 |
+| `output.seconds` | Duración del clip | Entero ≥ 1 |
+| `tv.device` | `ip:puerto` de la tele para ADB | Contiene `:` |
 | `oled.apl_max` | APL máximo admitido | Vacío hasta la primera medida en la tele (FR-010) |
 
 Cada corrección (orden `correct`) reescribe `color.gain` y deja el cambio a la vista en el diff.
@@ -41,6 +42,8 @@ Una fila por foto aceptada:
 | `photo` | Nombre del fichero en `entrada/` |
 | `params_sha` | Huella de `config/wall.toml` con el que se generó lo que se fotografió |
 | `de_top`, `de_left`, `de_right` | ΔE2000 entre dentro y fuera, por lado |
+| `ratio_top`, `ratio_left`, `ratio_right` | Cociente fuera/dentro en luz lineal, R/G/B: lo que usa `correct` |
+| `exposure`, `iso` | Exposición de la foto (EXIF), para rechazar un cambio no avisado |
 | `apl` | Nivel medio de la imagen, en % del blanco máximo |
 | `tv_settings` | Modo de imagen, temperatura de color, sensor de luz, tal como estaban |
 | `reflections` | Si había reflejos sobre el marco (lo anota quien hace la foto) |

@@ -18,11 +18,24 @@ De menos a más trabajo; no se pasa a un nivel sin haber probado el anterior.
 ## Cómo se hace el contenido
 
 1. **Foto de la pared** desde el sofá, con la luz de la tarde y la tele apagada, encuadrando la pared alrededor de la tele.
-2. **Rectificar**: corregir la perspectiva, recortar a 16:9 la zona que tapa la tele y rellenar lo tapado (las texturas de pared se generan bien).
-3. **Calibrar**: mostrar la imagen en la tele, fotografiar tele y pared desde el sofá con el móvil en exposición y balance de blancos manuales, comparar los píxeles justo dentro y justo fuera del marco, y ajustar curvas. Se repite hasta que cuadra.
+2. **Rectificar**: corregir la perspectiva y continuar dentro de la pantalla la luz de la pared que se ve junto a cada lado del marco. La pared del salón es lisa (pintura NCS S 0300-N, mate), así que no hay textura que inventar: solo luz.
+3. **Calibrar**: mostrar la imagen en la tele, fotografiar tele y pared desde el sofá en RAW, comparar los píxeles justo dentro y justo fuera del marco, y corregir. Se repite hasta que cuadra.
 4. **Movimiento**: deriva lenta de la imagen entera (unos píxeles), variación suave de la luz y algún elemento vivo (una planta que se mece, quizá un gato de vez en cuando). Bucle sin corte visible.
 
 Todo con scripts reproducibles (Python), no a mano.
+
+## La herramienta
+
+`python -m noteveo` hace los pasos 2 y 3 (spec [001](specs/001-imagen-fija/spec.md)). Se instala con `make install` y se comprueba con `make ci`.
+
+| Orden | Qué hace |
+|---|---|
+| `locate` | Busca la pantalla en la foto de referencia y escribe sus esquinas en `config/wall.toml`. |
+| `render` | Genera la pared en `salida/wall.png` y el clip `salida/wall.mp4` (4K, HEVC 10 bits). |
+| `push` / `remove` | Pone el clip en la tele por ADB, con retirada automática, y lo quita. |
+| `measure` / `correct` | Mide una foto de calibración y corrige el color. |
+
+El recorrido completo está en [quickstart.md](specs/001-imagen-fija/quickstart.md) y cada orden, en [contracts/cli.md](specs/001-imagen-fija/contracts/cli.md).
 
 ## Lo que ya sabemos
 
@@ -34,8 +47,11 @@ Todo con scripts reproducibles (Python), no a mano.
 
 | Carpeta | Contenido |
 |---|---|
-| `entrada/` | Fotos originales de la pared y de calibración. **No se publican**: fuera de git. |
+| `entrada/` | Fotos originales de la pared y de calibración, con GPS: fuera de git. Las copias reducidas y sin metadatos están en `tests/fixtures/salon/`. |
 | `salida/` | Imágenes y vídeos generados. Fuera de git: también muestran la casa. |
+| `config/` | Parámetros de la imagen, en texto (`wall.toml`). |
+| `calibracion/` | Una fila por foto de calibración medida (`medidas.csv`). |
+| `noteveo/`, `tests/` | La herramienta y sus pruebas, que usan escenas sintéticas, nunca fotos de casa. |
 | `docs/` | Medidas de la tele y notas. |
-| `scripts/` | Automatismos. |
+| `scripts/` | Scripts comunes que vienen de `.agent` (CI, deuda técnica, secretos). |
 | `specs/` | Una especificación por entregable (metodología [GitHub Spec Kit](https://github.com/github/spec-kit)). |

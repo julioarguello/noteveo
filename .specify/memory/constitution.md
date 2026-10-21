@@ -1,4 +1,11 @@
 <!--
+Informe de impacto — 1.0.0 → 2.0.0 (2026-10-21)
+- Redefinido (MAYOR), V: «La casa no se publica» pasa a «Qué se publica de la casa». Julio decidió el
+  2026-10-21 publicar las fotos del salón como casos reales de los tests, reducidas y sin
+  metadatos; la ubicación sigue sin publicarse nunca.
+- Pendiente: ninguno.
+-->
+<!--
 Informe de impacto — plantilla → 1.0.0 (2026-10-20)
 - Primera versión. Principios sacados del README y de lo medido en la tele (docs/medidas-tele.md).
 - Plantillas de Spec Kit (.specify/templates/) sin cambios: siguen en inglés; lo que se rellena a
@@ -51,16 +58,18 @@ cumple:
    que el resultado se pueda repetir.
 3. Las dependencias se declaran en el repositorio y se instalan en `.venv/`.
 
-### V. La casa no se publica (NO NEGOCIABLE)
+### V. Qué se publica de la casa (NO NEGOCIABLE)
 
-El repositorio es público.
+El repositorio es público y lo que se publica queda en el historial. Qué se ve de la casa lo decide
+Julio.
 
-1. Las fotos (`entrada/`) y lo generado a partir de ellas (`salida/`) nunca entran en git, ni en
-   issues, pull requests o páginas publicadas. Tampoco recortes, miniaturas ni capturas.
-2. Los documentos describen la casa solo en lo que el trabajo necesita (medidas, geometría,
-   colores) y nunca muestran personas, fotos familiares ni datos que la localicen.
-3. Antes de cada push se pasa el escáner de secretos y se revisa que ningún fichero nuevo sea una
-   imagen o un vídeo.
+1. Las fotos entran en git solo como casos reales de los tests, en `tests/fixtures/salon/`: copias
+   reducidas y sin ningún metadato. Los originales (`entrada/`) y lo generado (`salida/`) siguen
+   fuera de git.
+2. Nunca se publica la ubicación: ningún fichero lleva GPS ni datos que localicen la casa.
+   `tests/test_privacy.py` falla si una foto publicada tiene metadatos o si hay una imagen o un
+   vídeo fuera de `tests/fixtures/salon/`.
+3. Antes de cada push se pasan el escáner de secretos y `make ci`.
 
 ### VI. Se mide en la tele y se apunta con fecha
 
@@ -91,4 +100,4 @@ El repositorio es público.
 - Versiones: MAYOR si se quita o redefine un principio; MENOR si se añade uno o se amplía de forma
   material; PARCHE si solo se aclara la redacción.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-10-20 | **Última modificación**: 2026-10-20
+**Versión**: 2.0.0 | **Ratificada**: 2026-10-20 | **Última modificación**: 2026-10-21

@@ -20,14 +20,17 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
 ## R2. El color de partida es el de la pintura; el tinte lo pone la calibración
 
 - **Decisión**: la pared se genera como un gris neutro (NCS S 0300-N es un neutro: 0 % de
-  cromaticidad), con la claridad de partida L\* ≈ 96. La calibración ajusta el tinte y el nivel.
+  cromaticidad). El nivel de partida es un 25 % lineal del blanco de la tele (`color.level`), una
+  estimación: una pared blanca de interior por la tarde queda muy por debajo del blanco de la tele.
+  La calibración ajusta el tinte y el nivel.
 - **Por qué**: la pintura es neutra y mate (spec, Aclaraciones), así que el color que el ojo ve en la
   pared es el de la luz que le llega. Las fotos de `entrada/` tienen el balance de blancos automático
   del móvil (Pixel 7a), así que su tinte no es fiable; la foto de calibración, con tele y pared en la
   misma toma, sí lo es, porque compara las dos bajo la misma cámara.
-- **Fuente de L\***: 95,9 según [plan-home.com](https://plan-home.com/compare-colors/s-0300-n/s-2002-y20r),
-  que lo deriva de valores RGB de fabricantes y no de una medida; consultado el 2026-10-20. Solo sirve
-  de punto de partida: la primera vuelta de calibración lo corrige.
+- **L\* de la pintura, descartado como nivel**: 95,9 según
+  [plan-home.com](https://plan-home.com/compare-colors/s-0300-n/s-2002-y20r), derivado de valores RGB
+  de fabricantes; consultado el 2026-10-20. Es la reflectancia de la pintura, no la luminancia de la
+  pared: usado como nivel daba un 90 % de APL, una pantalla casi blanca.
 - **Descartado**: sacar el color medio de la pared de las fotos de `entrada/` (balance de blancos
   automático, exposición desconocida).
 
@@ -44,17 +47,24 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
   cuadrilátero oscuro más grande) y las escribe en el fichero de parámetros. Si la detección falla, se
   corrigen allí, en texto (constitución IV: es un parámetro, no un retoque de la imagen).
 
-## R4. La luz dentro del marco se interpola desde la pared de alrededor
+## R4. La luz dentro del marco continúa la pared de cada lado (membrana)
 
-- **Decisión**: se toma un anillo de pared alrededor del marco, en luz lineal. Se excluyen con
-  polígonos en los parámetros el mueble colgado, la columna, el mueble de madera y el jarrón. Sobre
-  ese anillo se ajusta una superficie suave (polinomio de grado bajo en x e y), que da cómo varía el
-  brillo dentro de la pantalla. El color sale de R2.
-- **Por qué**: la pared es lisa. Lo único que hay que inventar es el degradado de luz, y una
-  superficie suave no puede crear bordes (constitución III).
-- **Lado derecho**: la columna está pegada a la tele y su cara frontal es otra superficie, con otra
-  luz. Si el anillo de la derecha solo ve columna, ese lado se ajusta aparte. Se decide con la primera
-  foto de calibración.
+- **Decisión**: se toma un anillo de pared alrededor del marco, en luz lineal, sin lo que tapan los
+  polígonos de los parámetros. De cada lado sale un perfil (la pared junto al borde, suavizada a lo
+  largo de él). Dentro de la pantalla se resuelve la ecuación de Laplace con esos perfiles como
+  borde: una membrana tensada entre ellos. Un lado sin pared medida (menos del 30 %) queda libre. En
+  cada esquina los dos perfiles se llevan al mismo valor con una rampa sobre el 30 % del lado.
+- **Por qué**: la pared es lisa; lo único que hay que inventar es la luz. Una función armónica no
+  tiene máximos ni mínimos dentro, así que no crea manchas ni bordes (constitución III), y en cada
+  borde vale lo que el ojo ve justo al lado.
+- **Primera versión descartada (medido el 2026-10-20 en la foto de referencia)**: un polinomio de
+  grado 2 ajustado al anillo dejaba un error relativo del 28 %. La luz junto al marco no es suave:
+  arriba va de 0,66 a 0,30 (la sombra del mueble colgado), a la izquierda ronda 0,36 y a la derecha
+  0,10 a 0,20.
+- **Lado derecho**: lo que se ve a la derecha del marco no es la pared de detrás, sino la cara
+  lateral del hueco, en sombra (0,13 frente a 0,40 a la izquierda). Fijar el borde ahí oscurecía el
+  centro de la pantalla. Se tapa con la máscara `lateral_hueco` y ese lado queda libre; la primera
+  foto de calibración dirá si el borde derecho necesita algo más.
 - **Descartado**: rellenar la zona con un modelo generativo (no es reproducible bit a bit, y para una
   pared lisa no aporta).
 
@@ -101,9 +111,12 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
 ## R8. Entorno
 
 - **Python 3.12** en `.venv/` (medido el 2026-10-20: 3.12.15). Dependencias en `pyproject.toml`:
-  `numpy`, `opencv-python-headless` (homografía, contornos), `colour-science` (ΔE2000, espacios de
-  color), `rawpy` (DNG), `pytest`, `ruff`.
+  `numpy`, `opencv-python-headless` (homografía, contornos), `rawpy` (DNG), `exifread`, `pytest`,
+  `ruff`. ΔE2000 y las conversiones de color son propias (`noteveo/color.py`), comprobadas con los
+  pares de Sharma, Wu y Dalal (2005): `colour-science` avisaba al importarse por dependencias que no
+  se usan (SciPy, Matplotlib).
 - **Fuera de Python**: `ffmpeg` con `libx265` (el clip de prueba se generó con él el 2026-10-18) y
   `adb`. En el Mac, el daemon de `adb` arranca fuera del sandbox de Claude Code (`docs/medidas-tele.md`).
 - **Pruebas sin fotos de la casa**: los tests generan sus propias escenas sintéticas (un rectángulo
-  oscuro sobre un degradado) y nunca leen `entrada/` (constitución V).
+  oscuro sobre un degradado) y nunca leen `entrada/`. Desde el 2026-10-21 hay además casos reales:
+  las cuatro fotos del salón, reducidas y sin metadatos, en `tests/fixtures/salon/` (constitución V).
