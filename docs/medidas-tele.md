@@ -28,6 +28,15 @@ Sony KD-65A8 del salón, medida por ADB por red el 2026-10-18.
   vivo). El proceso lanzado con `nohup` desde `adb shell` sigue corriendo sin conexión.
 - **Arrancar el salvapantallas desde el Mac**: `com.android.systemui/.Somnambulator` existe en la
   tele (2026-10-20), pero no se ha lanzado todavía.
+- **`Somnambulator` arranca Aerial Views**: `push --start` a las 07:35 del 2026-10-22. El
+  salvapantallas tarda unos segundos: justo después de la orden, `dumpsys dreams` daba
+  `mCurrentDream: null`; poco después, `mWakefulness=Dreaming` y
+  `mCurrentDreamName=…aerialviews…DreamActivity` como actividad en primer plano.
+- **Parar la retirada automática exige matar el `sleep`**: el `sh` de la tele atrapa SIGTERM y lo
+  aplaza hasta que acaba la orden en primer plano. Medido el 2026-10-22 con dos temporizadores de
+  15 s: con `kill` a secas el `sh` seguía vivo y murió al acabar el `sleep` **sin ejecutar** lo que
+  venía detrás; con `pkill -P <pid>; kill <pid>` murió en el acto. Un temporizador viejo no quita,
+  por tanto, un clip nuevo.
 - Antes estaba **Sony Living Decor** (`com.sony.dtv.livingfit`, v2.37.15), el salvapantallas decorativo de Sony. No sabemos si deja poner fotos propias: no se ha mirado.
 - Salta a los 5 minutos sin uso (`screen_off_timeout` = 300000). La tele se apaga a las 4 h (`sleep_timeout`).
 
@@ -48,3 +57,7 @@ adb shell settings get secure screensaver_components
 ```
 
 En el Mac, el daemon de `adb` tiene que arrancar fuera del sandbox de Claude Code: dentro, `adb connect` falla con «No route to host» aunque el puerto 5555 responda.
+
+Cualquier orden `adb` lanzada dentro del sandbox, aunque sea `adb devices`, arranca allí el daemon,
+y desde entonces `adb connect` falla también fuera. Se arregla con `adb kill-server` y conectando de
+nuevo fuera del sandbox (2026-10-22).
