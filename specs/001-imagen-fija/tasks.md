@@ -65,7 +65,7 @@ dependencias pendientes).
 - [x] T022 [US2] `noteveo/measure.py`: leer DNG con `rawpy` (lineal) o JPEG, localizar el canto negro de la tele, franjas dentro y fuera en los tres lados que tocan pared, ΔE2000, rechazo con motivo (marco no localizado, franjas saturadas, exposición distinta sin `--new-exposure`) (research.md R5)
 - [x] T023 [US2] Orden `measure`: imprime ΔE por lado y APL, y añade la fila a `calibracion/medidas.csv` con las columnas de data-model.md (`taken_at`, `photo`, `params_sha`, `de_top`, `de_left`, `de_right`, `apl`, `tv_settings`, `reflections`)
 - [x] T024 [US2] `noteveo/correct.py` y orden `correct`: cociente fuera/dentro por canal en luz lineal → nuevo `color.gain` con variación de lado a lado; muestra el cambio y solo escribe con `--apply`
-- [ ] T025 [US2] Apuntar en `docs/medidas-tele.md` los ajustes de imagen de la tele con los que se calibra (modo de imagen, temperatura de color, sensor de luz) (research.md R6)
+- [x] T025 [US2] Apuntar en `docs/medidas-tele.md` los ajustes de imagen de la tele con los que se calibra (modo de imagen, temperatura de color, sensor de luz) (research.md R6)
 - [ ] T026 [US2] Vueltas de calibración con Julio, por la tarde, hasta ΔE2000 ≤ 3 en los tres lados (SC-001) y su confirmación desde el sofá (SC-002); fijar `oled.apl_max` con la medida (FR-010)
 
 **Punto de control**: SC-001 y SC-002 cumplidos; `remove` deja la tele como estaba.
