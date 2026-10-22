@@ -35,7 +35,7 @@ gain_x = [0.0, 0.0, 0.0]
 gain_y = [0.0, 0.0, 0.0]
 
 [output]
-seconds = 10
+seconds = 1800
 
 [tv]
 device = "192.168.1.49:5555"

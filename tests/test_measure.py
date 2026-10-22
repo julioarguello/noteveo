@@ -4,7 +4,7 @@ import pytest
 from noteveo.color import delta_e, luminance
 from noteveo.correct import corrected
 from noteveo.measure import SIDES, WALL_Y, MeasureError, measure
-from tests.synthetic import calibration_scene
+from tests.synthetic import CORNERS, calibration_scene
 from tests.test_wall import make_params
 
 OUTSIDE = np.array([0.50, 0.52, 0.55])
@@ -29,6 +29,18 @@ def test_measures_known_offset_on_three_sides():
 def test_matching_screen_gives_near_zero():
     sides = measure(calibration_scene(OUTSIDE, OUTSIDE), saturation=0.97)
     assert max(s.delta_e for s in sides.values()) < 0.5
+
+
+def test_bright_shelf_above_a_narrow_gap():
+    """Como en el salón (2026-10-22): sobre la tele, una franja estrecha de pared y encima el frente
+    claro de un mueble. Lo que se mide fuera es la pared del hueco, no el mueble."""
+    image = calibration_scene(INSIDE, OUTSIDE)
+    top = int(CORNERS[:2, 1].min())
+    width = CORNERS[1, 0] - CORNERS[0, 0]
+    shelf_bottom = top - int(0.045 * width)  # canto (~1,5 %) y unos 3 % de pared
+    image[: max(shelf_bottom, 0), :] = OUTSIDE * 1.8
+    sides = measure(image, saturation=0.97)
+    assert sides["top"].ratio == pytest.approx(OUTSIDE / INSIDE, rel=0.02)
 
 
 def test_burnt_strip_is_rejected():

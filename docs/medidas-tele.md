@@ -46,6 +46,42 @@ Sony KD-65A8 del salón, medida por ADB por red el 2026-10-18.
 - No se ha podido leer un valor: `adb` no tiene orden para eso, y el sistema no registra lux (`dumpsys display`) ni había nadie escuchando el sensor. El brillo automático de Sony no pasa por el servicio de sensores de Android.
 - Sigue siendo un sensor de brillo, no de color.
 
+## Ajustes de imagen con los que se calibra
+
+Leídos del menú Imagen de la entrada «Apps» (la que usa Aerial Views) el 2026-10-22, de fotos de
+Julio. Son los del día a día; la calibración se hace con ellos y no se tocan entre vueltas
+(research.md R6).
+
+| Grupo | Ajuste | Valor |
+|---|---|---|
+| Básico | Modo de imagen | Standard |
+| | Modo de imagen automático | Off |
+| | Sensor de luz | On |
+| Brillo | Brillo | Max |
+| | Contraste | 90 |
+| | Gamma | 0 |
+| | Nivel de negro | 50 |
+| | Ajuste de negro | Medium |
+| | Realce avanzado del contraste | Medium |
+| | Luminancia máxima | Medium |
+| Color | Color | 60 |
+| | Matiz | 0 |
+| | Temperatura de color | Neutral |
+| | Live Colour | Medium |
+| Claridad | Nitidez | 60 |
+| | Reducción de ruido aleatorio | Auto |
+| | Reducción de ruido digital | Auto |
+| | Gradación suave | Low |
+| Movimiento | Modo cine | Auto |
+| Señal de vídeo | Modo HDR, rango de vídeo HDMI, espacio de color | Auto |
+
+No se leen en las fotos los valores de Reality Creation ni de Motionflow.
+
+Tres de estos ajustes cambian la imagen según lo que haya en pantalla o en la sala, y son los
+candidatos si la calibración no converge: el **realce avanzado del contraste** (ajusta el contraste
+según el contenido), el **sensor de luz** (cambia el brillo con la luz de la sala) y **Live Colour**
+(satura los colores; en una pared casi neutra debería afectar poco).
+
 ## Cómo repetir las medidas
 
 ```sh
