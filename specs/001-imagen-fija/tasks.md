@@ -44,7 +44,7 @@ dependencias pendientes).
 - [x] T015 [US1] `noteveo/encode.py`: fotograma → `salida/wall.png` (16 bits) y `salida/wall.mp4` (HEVC 10 bits, BT.709, `-tag:v hvc1`, `output.seconds`) con `ffmpeg`, tramado antes de cuantizar a 10 bits
 - [x] T016 [US1] Orden `render`: imprime SHA-256 de los dos ficheros, el APL (% del blanco máximo) y el mayor salto entre vecinos; sale con `1` si el salto supera un nivel de 10 bits
 - [x] T017 [US1] `noteveo/tv.py` y órdenes `push`/`remove`: `adb push` a `/sdcard/Movies/noteveo/`, aviso a MediaStore, `--start` con `am start -n com.android.systemui/.Somnambulator`, retirada automática con `nohup sh -c 'sleep N; rm …'`, lista de lo que había guardada en `salida/tv-before.json` para `remove`; sale con `2` si la tele no responde
-- [ ] T018 [US1] Medir en la tele si la retirada automática sobrevive a cerrar ADB y si `Somnambulator` arranca Aerial Views; apuntar el resultado con fecha en `docs/medidas-tele.md` y ajustar `push` si falla (research.md R7)
+- [x] T018 [US1] Medir en la tele si la retirada automática sobrevive a cerrar ADB y si `Somnambulator` arranca Aerial Views; apuntar el resultado con fecha en `docs/medidas-tele.md` y ajustar `push` si falla (research.md R7)
 - [ ] T019 [US1] Primera imagen real: `locate` + `render` con la foto de referencia, revisar `salida/locate.png`, ajustar máscaras en `config/wall.toml`, `push --start` y verlo en la tele
 
 **Punto de control**: la pared se ve en la tele. Todavía sin calibrar.

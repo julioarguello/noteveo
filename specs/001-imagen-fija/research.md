@@ -100,13 +100,15 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
   (`MEDIA_SCANNER_SCAN_FILE`, como con el clip de prueba) y, opcional, arrancar el salvapantallas.
 - **Arrancar el salvapantallas**: la actividad `com.android.systemui/.Somnambulator` existe en la tele
   (`cmd package resolve-activity`, medido el 2026-10-20). No se ha ejecutado todavía.
-  `cmd dreams` no existe en Android 10.
+  `cmd dreams` no existe en Android 10. Lanzada el 2026-10-22: arranca Aerial Views en unos
+  segundos (`docs/medidas-tele.md`).
 - **Quitar**: borrar el clip de la carpeta y devolver la que había antes. El script guarda la lista
   de ficheros que encontró al poner la prueba.
 - **Retirada automática** (constitución III): al poner la prueba, el script deja en la tele un
   `sleep` seguido de un borrado, lanzado con `nohup`, para que la imagen fija se quite sola aunque nadie se
   acuerde. Que sobreviva a cerrar la conexión ADB está por medir; si no sobrevive, el script lo dice y
-  pide quitarla a mano.
+  pide quitarla a mano. Medido el 2026-10-20: sobrevive. Para pararla antes hay que matar también el
+  `sleep` hijo, porque el `sh` de la tele aplaza SIGTERM (medido el 2026-10-22).
 
 ## R8. Entorno
 

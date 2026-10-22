@@ -104,7 +104,9 @@ def _stop_timer(device: str, state_file: Path) -> None:
         return
     pid = json.loads(state_file.read_text()).get("timer_pid", "")
     if pid.isdigit():
-        _adb(device, "shell", f"kill {pid}", check=False)
+        # El sh de la tele atrapa SIGTERM y no muere hasta que acaba su sleep (medido el
+        # 2026-10-22): se mata antes al sleep hijo para que el temporizador muera ya.
+        _adb(device, "shell", f"pkill -P {pid}; kill {pid}", check=False)
 
 
 def timer_alive(device: str, state_file: Path) -> bool:
