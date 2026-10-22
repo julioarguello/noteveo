@@ -6,6 +6,12 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
 
 - **Decisión**: la «imagen fija» se entrega como un clip HEVC 10 bits, 3840×2160, de un fotograma
   repetido durante 10 s, que Aerial Views repite en bucle.
+- **Corrección, medida en la tele el 2026-10-22**: Aerial Views funde a negro cada vez que un vídeo
+  acaba, aunque vuelva a poner el mismo; con 10 s, la pared aparecía y desaparecía cada 10 s. Con
+  un clip de 30 minutos el fundido desaparece. El clip dura ahora `output.seconds` (1800 s, la
+  retirada automática por defecto): se codifica un tramo de 10 s y se repite sin recodificar
+  (`-stream_loop … -c copy`), un segundo frente a unos 40 minutos de codificar los 30 minutos
+  enteros. Ocupa unos 21 MB.
 - **Por qué**: medido el 2026-10-20 en el código de Aerial Views (`ui/core/ImagePlayerView.kt`,
   rama `main`): las fotos se decodifican al tamaño de la vista (`resolveTargetSize()` usa el ancho y
   alto de la vista o de `displayMetrics`). En la A8 la interfaz va a 1920×1080 (`docs/medidas-tele.md`),
@@ -80,6 +86,17 @@ Cada decisión dice qué se eligió, por qué y qué se descartó. Lo que se mid
 - **Foto de calibración**: en DNG. El Pixel 7a de Julio tiene la opción «RAW + JPEG» en Cámara →
   Ajustes → Avanzado (comprobado por Julio el 2026-10-20). El DNG es lineal y no lleva el tono del
   procesado del móvil. El JPEG que sale al lado solo sirve para mirarlo. El script rechaza fotos con zonas quemadas en las franjas.
+- **Ensayo con el JPEG, 2026-10-22 a las 11:38** (portada del RAW, HDR+, balance automático, con
+  el clip neutro en la tele: decodificado da 0,558 en R, G y B): la pantalla sale azul cielo (sRGB
+  106/175/238) y unas 3,5 veces más clara en luz lineal que la pared pegada al marco. A simple vista,
+  Julio la ve **más oscura** que la pared, y en el visor del móvil, más azul y más clara que en la
+  realidad. La cámara no ve la pantalla como el ojo: no se aplicó ninguna corrección. Falta
+  comprobar si el DNG, sin el tono de HDR+, coincide con lo que ve el ojo. Si tampoco coincide, la
+  medida con el móvil no sirve para el tinte de un OLED.
+- **El frente del mueble colgado engañaba a `measure`** (misma foto): sobre la tele hay unos 3 % de
+  pared en sombra y luego el frente claro del mueble, justo donde se tomaba la «pared lejana» de
+  referencia; la foto se rechazaba por no ver el final del canto. Ahora el canto se compara con la
+  pared que tiene justo al lado.
 - **Localizar el marco en la foto de calibración**: el canto negro de la tele es la línea oscura entre
   dos zonas claras. Si eso falla, el clip lleva un primer segundo con cuatro marcas en las esquinas y
   se hace una foto en ese segundo.

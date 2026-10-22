@@ -13,8 +13,10 @@ MEASURE_WIDTH = 960
 # Franjas, en fracción del ancho de la pantalla.
 INSIDE = (0.005, 0.02)  # desde el borde interior del canto negro hacia dentro
 OUTSIDE = 0.015  # ancho de la franja de pared, a partir de donde acaba el canto
-REFERENCE = (0.05, 0.07)  # pared lejana, para saber dónde acaba el canto
+REFERENCE = (0.05, 0.07)  # la foto tiene que llegar hasta aquí fuera del borde
 SEARCH = 0.05  # hasta dónde se busca el final del canto
+BEZEL_MAX = 0.03  # el punto más oscuro del canto está antes de esto
+NEAR_WALL = (0.01, 0.025)  # pared justo después del canto, para saber dónde acaba
 # La pared fuera se lleva a la luminancia de la pintura (L* ≈ 96) para calcular ΔE.
 WALL_Y = 0.9
 
@@ -87,12 +89,16 @@ def measure(rgb_linear: np.ndarray, saturation: float) -> dict[str, Side]:
         )
         if np.isnan(profile[edge - px(REFERENCE[1]) :]).any():
             raise MeasureError(f"el lado {side} se sale de la foto: encuadra con más margen")
-        reference = np.nanmedian(profile[edge - px(REFERENCE[1]) : edge - px(REFERENCE[0])])
+        # El canto se compara con la pared que tiene justo al lado: más lejos puede haber otra
+        # cosa (en el salón, el frente claro del mueble colgado a unos 5 % sobre la tele).
         outward = profile[edge - px(SEARCH) : edge][::-1]  # desde el borde hacia fuera
-        bright = np.nonzero(outward >= 0.8 * reference)[0]
-        if bright.size == 0:
+        low = int(np.argmin(outward[: px(BEZEL_MAX)]))
+        floor = outward[low]
+        wall = np.median(outward[low + px(NEAR_WALL[0]) : low + px(NEAR_WALL[1])])
+        bright = np.nonzero(outward[low:] >= floor + 0.8 * (wall - floor))[0]
+        if wall <= 2 * floor or bright.size == 0:
             raise MeasureError(f"en el lado {side} no se ve dónde acaba el canto negro")
-        bezel_end = int(bright[0])
+        bezel_end = low + int(bright[0])
         out_from = edge - bezel_end - px(0.003) - px(OUTSIDE)
         out_to = edge - bezel_end - px(0.003)
         inside = rgb_profile[edge + px(INSIDE[0]) : edge + px(INSIDE[1])].mean(axis=0)
