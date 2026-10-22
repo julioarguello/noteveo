@@ -96,14 +96,16 @@ def cmd_render(args) -> int:
     preview = OUTPUT_DIR / "preview.jpg"
     cv2.imwrite(str(preview), wall.preview_in_photo(reference_rgb, light, current))
     print(f"Vista previa en la foto: {preview.relative_to(ROOT)}")
+    clip_seconds = None
     if args.no_clip:
         clip.unlink(missing_ok=True)  # que push no suba un clip de otros parámetros
     else:
-        encode.encode_clip(png, clip, current.seconds)
+        clip_seconds = encode.encode_clip(png, clip, current.seconds)
     info = {
         "params_sha": params.digest(CONFIG_FILE),
         "png_sha256": encode.sha256(png),
         "mp4_sha256": encode.sha256(clip) if clip.exists() and not args.no_clip else None,
+        "clip_seconds": clip_seconds,
         "apl": round(level, 2),
         "max_step": round(step, 4),
         # Lados donde la imagen continúa la pared de detrás: los únicos que se calibran.
@@ -132,6 +134,16 @@ def cmd_push(args) -> int:
     if previous:
         print(f"Apartado mientras dura la prueba: {', '.join(previous)}")
     print(f"Se quita solo a los {args.minutes} minutos, o antes con «remove».")
+    info = json.loads(RENDER_INFO.read_text()) if RENDER_INFO.exists() else {}
+    seconds = info.get("clip_seconds")
+    if seconds is None:
+        print("No se sabe cuánto dura el clip: vuelve a ejecutar «render».", file=sys.stderr)
+    elif args.minutes * 60 > seconds:
+        print(
+            f"El clip dura {seconds} s y la prueba {args.minutes} min: Aerial Views fundirá a "
+            "negro cada vez que vuelva a empezar. Sube «output.seconds» y repite «render».",
+            file=sys.stderr,
+        )
     if args.start:
         print("Salvapantallas arrancado.")
     return OK

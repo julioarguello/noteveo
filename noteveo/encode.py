@@ -15,6 +15,9 @@ from noteveo.color import luminance
 DISPLAY_GAMMA = 2.4
 LEVELS = 1023  # 10 bits
 DITHER_SEED = 20261020
+# Aerial Views funde a negro al acabar cada vídeo, aunque lo repita (medido en la tele el
+# 2026-10-22): el clip tiene que durar toda la prueba. Se codifica un tramo y se repite.
+SEGMENT_SECONDS = 10
 
 
 def to_codes(linear: np.ndarray) -> np.ndarray:
@@ -52,11 +55,38 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def encode_clip(png: Path, clip: Path, seconds: int) -> None:
-    """Clip HEVC 10 bits BT.709 de un fotograma repetido."""
+def clip_seconds(seconds: int, segment: int = SEGMENT_SECONDS) -> int:
+    """Duración real del clip: `seconds` redondeado hacia arriba a tramos enteros."""
+    return -(-seconds // segment) * segment
+
+
+def encode_clip(png: Path, clip: Path, seconds: int, segment: int = SEGMENT_SECONDS) -> int:
+    """Clip HEVC 10 bits BT.709 de un fotograma repetido; devuelve su duración en segundos.
+
+    Se codifica un tramo corto y se repite dentro del contenedor sin recodificar: codificar 30
+    minutos lleva unos 40 (medido el 2026-10-22), y repetir el tramo, un segundo.
+    """
     if shutil.which("ffmpeg") is None:
         raise OSError("no se encuentra ffmpeg en el PATH")
-    command = [
+    total = clip_seconds(seconds, segment)
+    if total == segment:
+        _encode_segment(png, clip, segment)
+        return total
+    part = clip.with_name(clip.stem + "-tramo.mp4")
+    try:
+        _encode_segment(png, part, segment)
+        _run([
+            "ffmpeg", "-y", "-loglevel", "error",
+            "-stream_loop", str(total // segment - 1), "-i", str(part),
+            "-c", "copy", "-tag:v", "hvc1", "-fflags", "+bitexact", str(clip),
+        ])  # fmt: skip
+    finally:
+        part.unlink(missing_ok=True)
+    return total
+
+
+def _encode_segment(png: Path, clip: Path, seconds: int) -> None:
+    _run([
         "ffmpeg", "-y", "-loglevel", "error",
         "-loop", "1", "-framerate", "30", "-i", str(png), "-t", str(seconds),
         "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p10le",
@@ -67,7 +97,10 @@ def encode_clip(png: Path, clip: Path, seconds: int) -> None:
         "-color_range", "tv", "-tag:v", "hvc1", "-an",
         "-fflags", "+bitexact", "-flags:v", "+bitexact",
         str(clip),
-    ]  # fmt: skip
+    ])  # fmt: skip
+
+
+def _run(command: list[str]) -> None:
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
         raise OSError(f"ffmpeg falló: {result.stderr.strip()}")
