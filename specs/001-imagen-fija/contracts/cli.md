@@ -26,9 +26,22 @@ Genera `salida/wall.png` y `salida/wall.mp4` desde `config/wall.toml`.
 Copia `salida/wall.mp4` a la tele y la deja mostrándolo.
 
 - Opciones: `--device <ip:puerto>` (por defecto, el de `docs/medidas-tele.md`), `--minutes N`
-  (retirada automática, por defecto 30), `--start` (arranca el salvapantallas ya).
+  (retirada automática, por defecto 30), `--start` (arranca el salvapantallas ya), `--clip <vídeo>`
+  (otro vídeo en lugar de `salida/wall.mp4`, por ejemplo un barrido).
 - Guarda la lista de lo que había en la carpeta de la tele para que `remove` lo restaure.
 - Falla con `2` si la tele no responde.
+
+## `sweep`
+
+Genera un vídeo de pasos numerados para elegir a ojo el que casa con la pared.
+
+- Opciones: `--steps N` (por defecto 15), `--hold S` (segundos de cada paso, por defecto 12),
+  `--low` y `--high` (luz lineal del primer y del último paso, por defecto 0,04 y 1,0).
+- Salida: `salida/barrido-brillo.mp4` (grises neutros en progresión geométrica, el número arriba a
+  la derecha) y `salida/barrido-brillo.csv` (qué luz es cada paso). Se pone con
+  `push --clip salida/barrido-brillo.mp4 --start`.
+- Método en prueba: research.md R5 y la constitución IV descartan el ajuste a ojo, y se enmiendan
+  cuando el barrido quede validado en la tele.
 
 ## `remove`
 
