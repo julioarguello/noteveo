@@ -19,6 +19,7 @@ from noteveo import (
     geometry,
     params,
     photo,
+    sweep,
     tv,
     wall,
 )
@@ -118,12 +119,28 @@ def cmd_render(args) -> int:
     return OK
 
 
+def _render_seconds() -> int | None:
+    info = json.loads(RENDER_INFO.read_text()) if RENDER_INFO.exists() else {}
+    return info.get("clip_seconds")
+
+
+def cmd_sweep(args) -> int:
+    steps = sweep.brightness_steps(args.steps, args.low, args.high)
+    clip = OUTPUT_DIR / "barrido-brillo.mp4"
+    table = OUTPUT_DIR / "barrido-brillo.csv"
+    seconds = sweep.write_sweep(steps, clip, table, args.hold)
+    print(f"{clip.relative_to(ROOT)}: {len(steps)} pasos de {args.hold} s ({seconds} s en total).")
+    print(f"Qué es cada paso: {table.relative_to(ROOT)}")
+    print(f"Para ponerlo: push --clip {clip.relative_to(ROOT)} --start")
+    return OK
+
+
 def cmd_push(args) -> int:
     current = params.load(CONFIG_FILE)
     device = args.device or current.tv_device
-    clip = OUTPUT_DIR / "wall.mp4"
+    clip = Path(args.clip) if args.clip else OUTPUT_DIR / "wall.mp4"
     if not clip.exists():
-        print("No hay salida/wall.mp4: ejecuta antes «render».", file=sys.stderr)
+        print(f"No existe {clip}: ejecuta antes «render» o «sweep».", file=sys.stderr)
         return USAGE
     try:
         previous = tv.push(device, clip, args.minutes, args.start, TV_STATE)
@@ -134,9 +151,9 @@ def cmd_push(args) -> int:
     if previous:
         print(f"Apartado mientras dura la prueba: {', '.join(previous)}")
     print(f"Se quita solo a los {args.minutes} minutos, o antes con «remove».")
-    info = json.loads(RENDER_INFO.read_text()) if RENDER_INFO.exists() else {}
-    seconds = info.get("clip_seconds")
-    if seconds is None:
+    if args.clip:
+        pass  # un barrido se repite a propósito: el fundido entre vueltas no estorba
+    elif (seconds := _render_seconds()) is None:
         print("No se sabe cuánto dura el clip: vuelve a ejecutar «render».", file=sys.stderr)
     elif args.minutes * 60 > seconds:
         print(
@@ -290,7 +307,15 @@ def build_parser() -> argparse.ArgumentParser:
         if name == "push":
             p.add_argument("--minutes", type=int, default=30, help="retirada automática")
             p.add_argument("--start", action="store_true", help="arranca ya el salvapantallas")
+            p.add_argument("--clip", help="otro vídeo en lugar de salida/wall.mp4 (un barrido)")
         p.set_defaults(func=func)
+
+    p = sub.add_parser("sweep", help="vídeo de pasos numerados para elegir a ojo")
+    p.add_argument("--steps", type=int, default=15, help="número de pasos")
+    p.add_argument("--hold", type=int, default=12, help="segundos de cada paso")
+    p.add_argument("--low", type=float, default=0.04, help="luz lineal del primer paso")
+    p.add_argument("--high", type=float, default=1.0, help="luz lineal del último paso (1, blanco)")
+    p.set_defaults(func=cmd_sweep)
 
     p = sub.add_parser("measure", help="mide una foto de calibración")
     p.add_argument("--photo", required=True)
